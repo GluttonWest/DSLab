@@ -1,0 +1,63 @@
+#include <stdio.h>
+#include <ctype.h>
+#include <math.h>
+#define MAXSIZE 20
+
+typedef struct {
+    float items[MAXSIZE];
+    int top;
+} STACK;
+
+void PUSH(STACK *s, float data) {
+    s->items[++s->top] = data;
+}
+
+float POP(STACK *s) {
+    return s->items[s->top--];
+}
+
+float compute(float op1, char sym, float op2) {
+    switch(sym) {
+        case '+': return op1 + op2;
+        case '-': return op1 - op2;
+        case '*': return op1 * op2;
+        case '/': return op1 / op2;
+        case '%': return op1 % op2;
+        case '^': return pow(op1, op2);
+        default: 
+            printf("\nInvalid operator: %c", sym);
+            return 0;
+    }
+}
+
+int main() {
+    STACK s;
+    char postfix[30], sym;
+    float n1, n2, res, data;
+    int i;
+    s.top = -1;
+
+    printf("\nEnter a valid postfix expression:\n");
+    scanf("%s", postfix);
+
+    for (i = 0; postfix[i] != '\0'; i++) { 
+        sym = postfix[i];
+        if (isdigit(sym)) {
+            PUSH(&s, sym - '0');
+        } 
+        else if (isalpha(sym)) {
+            printf("\n%c = ", sym);
+            scanf("%f", &data);
+            PUSH(&s, data);
+        } 
+        else {
+            n2 = POP(&s);
+            n1 = POP(&s);
+            res = compute(n1, sym, n2);
+            PUSH(&s, res);
+        }
+    }
+
+    printf("\nResult of evaluation: %f\n", POP(&s));
+    return 0;
+}
